@@ -13,6 +13,16 @@ const Navbar = () => {
           All Products
         </NavLink>
       </li>
+      <li>
+        <NavLink className="" to="/register">
+          Register
+        </NavLink>
+      </li>
+      <li>
+        <NavLink className="" to="/login">
+          Login
+        </NavLink>
+      </li>
     </>
   );
 
