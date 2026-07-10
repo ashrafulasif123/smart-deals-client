@@ -9,6 +9,9 @@ import AllProducts from "./components/AllProducts/AllProducts";
 import AuthProvider from "./contexts/AuthProvider";
 import Register from "./components/Register/Register";
 import Login from "./components/Login/Login";
+import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
+import MyProducts from "./components/MyProducts/MyProducts";
+import MyBids from "./components/MyBids/MyBids";
 
 const router = createBrowserRouter([
   {
@@ -21,7 +24,27 @@ const router = createBrowserRouter([
       },
       {
         path: "allProducts",
-        Component: AllProducts,
+        element: (
+          <PrivateRoute>
+            <AllProducts></AllProducts>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "myProducts",
+        element: (
+          <PrivateRoute>
+            <MyProducts></MyProducts>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "myBids",
+        element: (
+          <PrivateRoute>
+            <MyBids></MyBids>
+          </PrivateRoute>
+        ),
       },
       {
         path: "register",

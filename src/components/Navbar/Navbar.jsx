@@ -1,6 +1,21 @@
-import { NavLink } from "react-router";
+import { use } from "react";
+import { Link, NavLink, useNavigate } from "react-router";
+import { AuthContext } from "../../contexts/AuthContext";
+import { toast } from "react-toastify";
 
 const Navbar = () => {
+  const { user, loading, logOut } = use(AuthContext);
+  const navigate = useNavigate();
+  const handleLogOut = () => {
+    logOut()
+      .then(() => {
+        toast("You Have Successfully Logout");
+        navigate("/");
+      })
+      .catch((error) => {
+        toast(error);
+      });
+  };
   const links = (
     <>
       <li>
@@ -13,16 +28,20 @@ const Navbar = () => {
           All Products
         </NavLink>
       </li>
-      <li>
-        <NavLink className="" to="/register">
-          Register
-        </NavLink>
-      </li>
-      <li>
-        <NavLink className="" to="/login">
-          Login
-        </NavLink>
-      </li>
+      {user && (
+        <>
+          <li>
+            <NavLink className="" to="/myProducts">
+              My Products
+            </NavLink>
+          </li>
+          <li>
+            <NavLink className="" to="/myBids">
+              My Bids
+            </NavLink>
+          </li>
+        </>
+      )}
     </>
   );
 
@@ -61,8 +80,19 @@ const Navbar = () => {
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">{links}</ul>
       </div>
+
       <div className="navbar-end">
-        <a className="btn">Button</a>
+        {loading ? (
+          <span className="loading loading-spinner loading-sm"></span>
+        ) : user ? (
+          <button onClick={handleLogOut} className="btn btn-warning">
+            Sign Out
+          </button>
+        ) : (
+          <Link className="btn btn-success" to="/login">
+            Sign In
+          </Link>
+        )}
       </div>
     </div>
   );

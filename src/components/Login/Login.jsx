@@ -1,4 +1,37 @@
+import { use } from "react";
+import { AuthContext } from "../../contexts/AuthContext";
+import { toast } from "react-toastify";
+import { Link, useLocation, useNavigate } from "react-router";
+
 const Login = () => {
+  const { signInUser, loading, setLoading } = use(AuthContext);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const from = location?.state?.from?.pathname || "/";
+  const handleSignIn = (e) => {
+    e.preventDefault();
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    signInUser(email, password)
+      .then(() => {
+        // if (!result.user.emailVerified) {
+        //   toast.warning("Please verify your email before logging in.");
+        //   console.log(result.user);
+        //   return;
+        // }
+        toast.success("You have successfully Login");
+        navigate(from, { replace: true });
+      })
+      .catch((error) => {
+        toast(error.message);
+        setLoading(false);
+      });
+  };
+  if (loading) {
+    return (
+      <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 loading loading-spinner loading-xl"></span>
+    );
+  }
   return (
     <div className="bg-gray-100 flex min-h-screen items-center justify-center px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8 rounded-2xl bg-white p-8 shadow-xl">
@@ -13,7 +46,7 @@ const Login = () => {
         </div>
 
         {/* Form */}
-        <form className="mt-8 space-y-6">
+        <form onSubmit={handleSignIn} className="mt-8 space-y-6">
           <div className="space-y-4 rounded-md">
             {/* Email Input */}
             <div>
@@ -134,15 +167,14 @@ const Login = () => {
         </div>
 
         {/* Footer link */}
-        <p class="text-center text-sm text-gray-600">
-          Don't have an account?{" "}
-          <a
-            href="#"
-            className="font-medium text-indigo-600 hover:text-indigo-500"
-          >
-            Create an account
-          </a>
-        </p>
+        <Link to="/register">
+          <p className="text-center text-sm text-gray-600">
+            Don't have an account?{" "}
+            <span className="font-medium text-indigo-600 hover:text-indigo-500">
+              Create an account
+            </span>
+          </p>
+        </Link>
       </div>
     </div>
   );

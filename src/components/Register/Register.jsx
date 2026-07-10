@@ -1,15 +1,40 @@
 import { use } from "react";
 import { Link } from "react-router";
 import { AuthContext } from "../../contexts/AuthContext";
+import { toast } from "react-toastify";
+import { sendEmailVerification, updateProfile } from "firebase/auth";
 
 const Register = () => {
-  const { signInWithGoogle, loading } = use(AuthContext);
+  const { createUser, signInWithGoogle } = use(AuthContext);
+  const handleRegister = (e) => {
+    e.preventDefault();
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    const displayName = e.target.name.value;
+    const photoURL = e.target.imageUrl.value;
+    const userProfile = { displayName, photoURL };
+    createUser(email, password)
+      .then((result) => {
+        updateProfile(result.user, userProfile)
+          .then(() => {
+            sendEmailVerification(result.user).then(() => {
+              toast(
+                "You have successfully registered & Check Your Email to Verification"
+              );
+            });
+          })
+          .catch((error) => {
+            toast(error.message);
+          });
+      })
+      .catch((error) => {
+        toast(error.message);
+      });
+  };
   const handleGoogleSignIn = () => {
     signInWithGoogle().then(() => {});
   };
-  if (loading) {
-    return <p className="">Loading...</p>;
-  }
+
   return (
     <div className="bg-gray-100 flex min-h-screen items-center justify-center px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8 rounded-2xl bg-white p-8 shadow-xl">
@@ -24,7 +49,7 @@ const Register = () => {
         </div>
 
         {/* Form */}
-        <form className="mt-8 space-y-6">
+        <form onSubmit={handleRegister} className="mt-8 space-y-6">
           <div className="space-y-4 rounded-md">
             {/* Name Input */}
             <div>
@@ -56,8 +81,8 @@ const Register = () => {
                 id="email-address"
                 name="email"
                 type="email"
-                autoComplete="email"
-                required
+                // autoComplete="email"
+                // required
                 className="relative block w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm transition duration-200"
                 placeholder="example@mail.com"
               />
@@ -74,8 +99,8 @@ const Register = () => {
               <input
                 id="image-url"
                 name="imageUrl"
-                type="url"
-                required
+                // type="url"
+                // required
                 className="relative block w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm transition duration-200"
                 placeholder="https://example.com/photo.jpg"
               />
@@ -93,7 +118,7 @@ const Register = () => {
                 id="password"
                 name="password"
                 type="password"
-                required
+                // required
                 className="relative block w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm transition duration-200"
                 placeholder="••••••••"
               />
@@ -106,8 +131,8 @@ const Register = () => {
               id="terms"
               name="terms"
               type="checkbox"
-              required
-              className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+              //   required
+              //   className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
             />
             <label htmlFor="terms" className="ml-2 block text-gray-950">
               I agree to the{" "}
@@ -182,12 +207,12 @@ const Register = () => {
         {/* Footer link */}
         <p className="text-center text-sm text-gray-600">
           Already have an account?{" "}
-          <a
-            href="#"
+          <Link
             className="font-medium text-indigo-600 hover:text-indigo-500"
+            to="/login"
           >
-            <Link to="/login">Sign In</Link>
-          </a>
+            Sign In
+          </Link>
         </p>
       </div>
     </div>
