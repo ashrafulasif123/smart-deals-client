@@ -85,7 +85,7 @@ const Navbar = () => {
         {loading ? (
           <span className="loading loading-spinner loading-sm"></span>
         ) : user ? (
-          <button onClick={handleLogOut} className="btn btn-warning">
+          <button onClick={handleLogOut} className="btn btn-primary">
             Sign Out
           </button>
         ) : (
