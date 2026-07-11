@@ -5,8 +5,14 @@
   themes: light --default;
 }
 @plugin "daisyui/theme" {
-  --color-primary: blue;
+  name: "light";
+  default: true;
+
+  --color-primary: #632ee3;
   --color-secondary: teal;
+}
+.text-primary {
+  @apply bg-gradient-to-r from-[#632EE3] to-[#9F62F2] bg-clip-text text-transparent;
 }
 
 .btn-primary {
@@ -15,4 +21,11 @@
 
 .btn-primary:hover {
   @apply opacity-90;
+}
+
+.btn-secondary {
+  @apply w-full py-2.5 border border-violet-500 text-violet-600 font-medium rounded-lg;
+}
+.btn-secondary:hover {
+  @apply bg-[#632EE3] text-white transition duration-300;
 }

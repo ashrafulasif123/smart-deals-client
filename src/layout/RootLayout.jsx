@@ -7,7 +7,9 @@ const RootLayout = () => {
     <div className="relative min-h-screen">
       <Navbar></Navbar>
       <ToastContainer />
-      <Outlet />
+      <div className="max-w-7xl mx-auto">
+        <Outlet />
+      </div>
     </div>
   );
 };
