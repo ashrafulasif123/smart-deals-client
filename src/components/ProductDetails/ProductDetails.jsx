@@ -1,8 +1,11 @@
+import { use, useRef } from "react";
 import { useLoaderData } from "react-router";
+import { AuthContext } from "../../contexts/AuthContext";
 
 const ProductDetails = () => {
   const product = useLoaderData();
   const {
+    _id,
     title,
     price_min,
     price_max,
@@ -24,6 +27,29 @@ const ProductDetails = () => {
     if (!dateString) return "";
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US");
+  };
+  const bidModalRef = useRef();
+  const { user } = use(AuthContext);
+  const handleBidModalOpen = () => {
+    bidModalRef.current.showModal();
+  };
+
+  const handleBidSubmit = (e) => {
+    e.preventDefault();
+    const name = e.target.name.value;
+    const email = e.target.email.value;
+    const bid = e.target.bid.value;
+    const newBid = { _id, name, email, bid };
+
+    fetch("http://localhost:3000/bids/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newBid),
+    })
+      .then((res) => res.json())
+      .then((data) => console.log(data));
   };
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-6 bg-gray-50 font-sans min-h-screen">
@@ -183,9 +209,113 @@ const ProductDetails = () => {
           </div>
 
           {/* Buy Button */}
-          <button className="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition duration-200 text-base">
+          <button
+            onClick={() => handleBidModalOpen()}
+            className="w-full bg-violet-600 hover:bg-violet-700 text-white font-semibold py-3.5 rounded-xl shadow-md transition duration-200 text-base"
+          >
             I Want Buy This Product
           </button>
+          <dialog
+            ref={bidModalRef}
+            className="modal modal-bottom sm:modal-middle"
+          >
+            <div className="modal-box max-w-2xl mx-auto">
+              <div className="bg-white border border-gray-100 rounded-2xl p-6 md:p-8 shadow-sm font-sans">
+                {/* Title */}
+                <h2 className="text-2xl md:text-3xl font-bold text-slate-950 text-center mb-8">
+                  Give Seller Your Offered Price
+                </h2>
+
+                {/* Form Container */}
+                <form onSubmit={handleBidSubmit} className="space-y-5">
+                  {/* Row 1: Name and Email */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="block text-sm font-semibold text-slate-800">
+                        Buyer Name
+                      </label>
+                      <input
+                        type="text"
+                        name="name"
+                        readOnly
+                        defaultValue={user.displayName}
+                        className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-slate-900 placeholder-gray-400 focus:outline-none focus:border-violet-500 transition text-sm"
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="block text-sm font-semibold text-slate-800">
+                        Buyer Email
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        readOnly
+                        defaultValue={user.email}
+                        className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-slate-900 placeholder-gray-400 focus:outline-none focus:border-violet-500 transition text-sm"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Row 2: Image URL */}
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-semibold text-slate-800">
+                      Buyer Image URL
+                    </label>
+                    <input
+                      type="url"
+                      name="buyerImage"
+                      placeholder="https://...your_img_url"
+                      className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-slate-900 placeholder-gray-400 focus:outline-none focus:border-violet-500 transition text-sm"
+                    />
+                  </div>
+
+                  {/* Row 3: Place Price */}
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-semibold text-slate-800">
+                      Place your Price
+                    </label>
+                    <input
+                      type="text"
+                      name="bid"
+                      placeholder="Place Bid"
+                      className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-slate-900 placeholder-gray-400 focus:outline-none focus:border-violet-500 transition text-sm"
+                    />
+                  </div>
+
+                  {/* Row 4: Contact Info */}
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-semibold text-slate-800">
+                      Contact Info
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. +1-555-1234"
+                      className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-slate-900 placeholder-gray-400 focus:outline-none focus:border-violet-500 transition text-sm"
+                    />
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex justify-end items-center space-x-3 pt-6">
+                    <div className="">
+                      <form method="dialog">
+                        {/* if there is a button in form, it will close the modal */}
+                        <button className="px-6 py-2.5 bg-gray-600 hover:bg-gray-900 text-white font-medium rounded-lg shadow-sm transition duration-200 text-sm">
+                          Close
+                        </button>
+                      </form>
+                    </div>
+                    <button
+                      type="submit"
+                      className="px-6 py-2.5 bg-violet-500 hover:bg-violet-600 text-white font-medium rounded-lg shadow-sm transition duration-200 text-sm"
+                    >
+                      Submit Bid
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </dialog>
         </div>
       </div>
     </div>

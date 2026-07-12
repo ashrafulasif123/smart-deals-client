@@ -24,7 +24,7 @@
 }
 
 .btn-secondary {
-  @apply w-full py-2.5 border border-violet-500 text-violet-600 font-medium rounded-lg;
+  @apply w-full block text-center py-2.5 border border-violet-500 text-violet-600 font-medium rounded-lg;
 }
 .btn-secondary:hover {
   @apply bg-[#632EE3] text-white transition duration-300;
