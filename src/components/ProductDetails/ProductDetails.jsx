@@ -41,7 +41,7 @@ const ProductDetails = () => {
       .then((data) => {
         setBids(data);
       });
-  }, []);
+  }, [productId]);
 
   const handleBidModalOpen = () => {
     bidModalRef.current.showModal();
@@ -51,7 +51,7 @@ const ProductDetails = () => {
     e.preventDefault();
     const name = e.target.name.value;
     const email = e.target.email.value;
-    const bid = e.target.bid.value;
+    const bid = Number(e.target.bid.value);
     // if (bid < price_min || bid > price_max) {
     //   toast.warning(`bid should be between ${price_min} to ${price_max} `);
     //   return;
@@ -74,8 +74,12 @@ const ProductDetails = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         if (data.insertedId) {
+          newBid._id = data.insertedId;
+          const newBids = [...bids, newBid].sort(
+            (a, b) => b.bid_price - a.bid_price
+          );
+          setBids(newBids);
           bidModalRef.current.close();
           Swal.fire({
             position: "top-end",
@@ -376,15 +380,16 @@ const ProductDetails = () => {
                     <input type="checkbox" className="checkbox" />
                   </label>
                 </th>
-                <th>Name</th>
-                <th>Job</th>
-                <th>Favorite Color</th>
+                <th>SL NO</th>
+                <th>Buyer</th>
+                <th>Buyer Email</th>
+                <th>Bid Price</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
               {/* row 1 */}
-              {bids.map((bid) => {
+              {bids.map((bid, index) => {
                 return (
                   <tr key={bid?._id}>
                     <th>
@@ -392,6 +397,7 @@ const ProductDetails = () => {
                         <input type="checkbox" className="checkbox" />
                       </label>
                     </th>
+                    <td>{index + 1}</td>
                     <td>
                       <div className="flex items-center gap-3">
                         <div className="avatar">
@@ -404,20 +410,14 @@ const ProductDetails = () => {
                         </div>
                         <div>
                           <div className="font-bold">{bid?.buyer_name}</div>
-                          <div className="text-sm opacity-50">
-                            United States
-                          </div>
                         </div>
                       </div>
                     </td>
                     <td>
-                      Zemlak, Daniel and Leannon
+                      {bid?.buyer_email}
                       <br />
-                      <span className="badge badge-ghost badge-sm">
-                        Desktop Support Technician
-                      </span>
                     </td>
-                    <td>Purple</td>
+                    <td>{bid?.bid_price}</td>
                     <th>
                       <button className="btn btn-ghost btn-xs">details</button>
                     </th>
