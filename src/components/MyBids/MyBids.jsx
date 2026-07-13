@@ -1,6 +1,7 @@
 import { use, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import Header from "../Header/Header";
+import Swal from "sweetalert2";
 
 const MyBids = () => {
   const { user } = use(AuthContext);
@@ -15,6 +16,59 @@ const MyBids = () => {
         });
     }
   }, [user?.email]);
+
+  /* const handleRemoveBid = (id) => {
+    console.log(id);
+    fetch(`http://localhost:3000/bids/${id}`, {
+      method: "DELETE",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.deletedCount) {
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "You have Successfully Deleted This bid",
+            showConfirmButton: false,
+            timer: 2000,
+          });
+          const remainingBids = bids.filter((bid) => bid?._id !== id);
+          setBids(remainingBids);
+        }
+      });
+  }; */
+  const handleRemoveBid = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`http://localhost:3000/bids/${id}`, {
+          method: "DELETE",
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+            if (data.deletedCount) {
+              Swal.fire({
+                title: "Deleted!",
+                text: "Your bid has been deleted.",
+                icon: "success",
+              });
+              const remainingBids = bids.filter((bid) => bid?._id !== id);
+              setBids(remainingBids);
+            } else {
+              console.log(data);
+            }
+          });
+      }
+    });
+  };
   return (
     <div>
       <Header title="My Bids:" highlight={bids?.length}></Header>
@@ -23,16 +77,12 @@ const MyBids = () => {
           {/* head */}
           <thead>
             <tr>
-              <th>
-                <label>
-                  <input type="checkbox" className="checkbox" />
-                </label>
-              </th>
-              <th>SL NO</th>
-              <th>Buyer</th>
-              <th>Buyer Email</th>
+              <th>#</th>
+              <th>Product</th>
+              <th>Seller</th>
               <th>Bid Price</th>
-              <th></th>
+              <th>Status</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -40,11 +90,6 @@ const MyBids = () => {
             {bids.map((bid, index) => {
               return (
                 <tr key={bid?._id}>
-                  <th>
-                    <label>
-                      <input type="checkbox" className="checkbox" />
-                    </label>
-                  </th>
                   <td>{index + 1}</td>
                   <td>
                     <div className="flex items-center gap-3">
@@ -66,8 +111,22 @@ const MyBids = () => {
                     <br />
                   </td>
                   <td>{bid?.bid_price}</td>
+                  <td>
+                    <div
+                      className={`badge badge-${
+                        bid?.status === "pending" ? "warning" : "success"
+                      }`}
+                    >
+                      {bid?.status}
+                    </div>
+                  </td>
                   <th>
-                    <button className="btn btn-ghost btn-xs">details</button>
+                    <button
+                      onClick={() => handleRemoveBid(bid?._id)}
+                      className="btn btn-xs btn-outline btn-error"
+                    >
+                      Remove Bid
+                    </button>
                   </th>
                 </tr>
               );
