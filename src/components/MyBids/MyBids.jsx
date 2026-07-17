@@ -6,37 +6,22 @@ import Swal from "sweetalert2";
 const MyBids = () => {
   const { user } = use(AuthContext);
   const [bids, setBids] = useState([]);
-
   useEffect(() => {
     if (user?.email) {
-      fetch(`http://localhost:3000/bids/?email=${user?.email}`)
+      fetch(`http://localhost:3000/bids/?email=${user?.email}`, {
+        headers: {
+          authorization: `Bearer ${user.accessToken}`,
+          // authorization: `Bearer hdfgsdfagfasdhdfhdfhdfhdfhedhhdhfhfeah`,
+        },
+      })
         .then((res) => res.json())
         .then((data) => {
+          console.log(data);
           setBids(data);
         });
     }
-  }, [user?.email]);
+  }, [user]);
 
-  /* const handleRemoveBid = (id) => {
-    console.log(id);
-    fetch(`http://localhost:3000/bids/${id}`, {
-      method: "DELETE",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.deletedCount) {
-          Swal.fire({
-            position: "top-end",
-            icon: "success",
-            title: "You have Successfully Deleted This bid",
-            showConfirmButton: false,
-            timer: 2000,
-          });
-          const remainingBids = bids.filter((bid) => bid?._id !== id);
-          setBids(remainingBids);
-        }
-      });
-  }; */
   const handleRemoveBid = (id) => {
     Swal.fire({
       title: "Are you sure?",

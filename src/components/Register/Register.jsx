@@ -1,11 +1,15 @@
 import { use } from "react";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { AuthContext } from "../../contexts/AuthContext";
 import { toast } from "react-toastify";
 import { sendEmailVerification, updateProfile } from "firebase/auth";
 
 const Register = () => {
   const { createUser, signInWithGoogle } = use(AuthContext);
+  const location = useLocation();
+  const from = location?.state?.from?.pathname;
+  const navigate = useNavigate();
+
   const handleRegister = (e) => {
     e.preventDefault();
     const email = e.target.email.value;
@@ -47,7 +51,9 @@ const Register = () => {
           body: JSON.stringify(newUser),
         })
           .then((res) => res.json())
-          .then((data) => console.log("data after save", data));
+          .then(() => {
+            navigate(from, { replace: true });
+          });
       })
       .catch((error) => {
         toast.error(error);
