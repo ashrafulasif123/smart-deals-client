@@ -7,7 +7,7 @@ import { sendEmailVerification, updateProfile } from "firebase/auth";
 const Register = () => {
   const { createUser, signInWithGoogle } = use(AuthContext);
   const location = useLocation();
-  const from = location?.state?.from?.pathname;
+  const from = location?.state?.from?.pathname || "/";
   const navigate = useNavigate();
 
   const handleRegister = (e) => {
